@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Catalog</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+  font-family: "Noto Sans Thai", sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f9fbfd;
+  color: #333;
+}
+
+h1 {
+  text-align: center;
+  background: linear-gradient(135deg, #009688, #4db6ac);
+  color: white;
+  padding: 20px 0;
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* 🔍 Controls */
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 20px auto;
+  flex-wrap: wrap;
+  max-width: 800px;
+  padding: 10px;
+  background: #fff;
+  border-radius: 50px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+input {
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 25px;
+  font-size: 16px;
+  outline: none;
+  transition: 0.3s;
+  flex: 1;
+  min-width: 180px;
+}
+
+input:focus {
+  border-color: #009688;
+  box-shadow: 0 0 6px rgba(0,150,136,0.3);
+}
+
+/* 🎨 Better Dropdown */
+select {
+  padding: 10px 40px 10px 15px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 25px;
+  background: #fff url("data:image/svg+xml,%3Csvg fill='none' stroke='%23009688' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") 
+              no-repeat right 12px center;
+  background-size: 18px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 150px;
+}
+
+select:hover {
+  border-color: #009688;
+  box-shadow: 0 0 8px rgba(0,150,136,0.25);
+}
+
+select:focus {
+  outline: none;
+  border-color: #00796b;
+  box-shadow: 0 0 10px rgba(0,150,136,0.35);
+}
+
+/* 🛒 Product Grid */
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 25px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.product-card {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+.product-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.product-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.product-info {
+  padding: 15px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.product-info h3 {
+  margin: 0 0 8px 0;
+  color: #00796b;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.price {
+  display: inline-block;
+  background: #e91e63;
+  color: white;
+  font-weight: bold;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.types span {
+  display: inline-block;
+  margin: 5px 5px 0 0;
+  background: #009688;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  transition: background 0.3s;
+}
+.types span:hover {
+  background: #00796b;
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.3s;
+  z-index: 1000;
+}
+.modal.active {
+  opacity: 1;
+  visibility: visible;
+}
+.modal-content {
+  background: #fff;
+  border-radius: 16px;
+  max-width: 650px;
+  width: 90%;
+  max-height: 85%;
+  overflow-y: auto;
+  position: relative;
+  padding: 20px;
+  animation: fadeInUp 0.3s ease;
+}
+@keyframes fadeInUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 15px;
+  cursor: pointer;
+  font-size: 24px;
+  color: #666;
+  transition: 0.2s;
+}
+.modal-close:hover {
+  color: #e91e63;
+}
+
+.carousel {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 10px 0;
+  scroll-snap-type: x mandatory;
+}
+.carousel img {
+  max-height: 250px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+  scroll-snap-align: center;
+}
+
+    
+  </style>
+</head>
+<body>
+  <h1>แคตตาล็อกสินค้า</h1>
+
+  <!-- Controls -->
+  <div class="controls">
+    <input type="text" id="searchInput" placeholder="🔍 ค้นหาสินค้า..." />
+    <select id="typeFilter">
+      <option value="">ทุกประเภท</option>
+    </select>
+  </div>
+
+  <div class="products" id="productContainer"></div>
+
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <span class="modal-close" id="modalClose">&times;</span>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script>
+    const apiURL =
+      "https://script.google.com/macros/s/AKfycbwLaZWpjeMjqskUHsn6JeIMdd6np4A7xE_MiS8u9COtjI09jcotG-3lQjWtS5EilMzY/exec";
+    let data = [];
+
+    const productContainer = document.getElementById("productContainer");
+    const searchInput = document.getElementById("searchInput");
+    const typeFilter = document.getElementById("typeFilter");
+    const modal = document.getElementById("modal");
+    const modalBody = document.getElementById("modalBody");
+    const modalClose = document.getElementById("modalClose");
+
+    // โหลดข้อมูล
+    fetch(apiURL)
+      .then((res) => res.json())
+      .then((resData) => {
+        data = resData;
+        populateTypeFilter();
+        renderProducts(data);
+      })
+      .catch((err) => console.error("โหลดข้อมูลไม่ได้:", err));
+
+    // เติมตัวเลือกประเภท
+    function populateTypeFilter() {
+      const allTypes = new Set();
+      data.forEach((item) => {
+        if (item.ประเภท) {
+          item.ประเภท.split(",").forEach((t) => allTypes.add(t.trim()));
+        }
+      });
+      allTypes.forEach((type) => {
+        const option = document.createElement("option");
+        option.value = type;
+        option.textContent = type;
+        typeFilter.appendChild(option);
+      });
+    }
+
+    // แสดงสินค้า
+    function renderProducts(products) {
+      productContainer.innerHTML = "";
+      products.forEach((item) => {
+        const images = item.รูป ? item.รูป.split(",") : [];
+        const card = document.createElement("div");
+        card.className = "product-card";
+        card.innerHTML = `
+          <img src="${
+            images.length ? images[0].trim() : "https://via.placeholder.com/240"
+          }" alt="${item.ชื่อสินค้า}">
+          <div class="product-info">
+            <h3>${item.ชื่อสินค้า}</h3>
+            <p class="price">${item.ราคา} บาท</p>
+            <div class="types">${item.ประเภท
+              .split(",")
+              .map((t) => `<span>${t.trim()}</span>`)
+              .join("")}</div>
+          </div>
+        `;
+        card.addEventListener("click", () => openModal(item));
+        productContainer.appendChild(card);
+      });
+    }
+
+    // เปิด modal
+    function openModal(item) {
+      modalBody.innerHTML = `
+        <h2 style="color:#00796b;margin-bottom:10px;">${item.ชื่อสินค้า}</h2>
+        <p style="margin-bottom:10px;">${item.คำอธิบาย || ""}</p>
+        <p class="price">${item.ราคา} บาท</p>
+        <div class="carousel">
+          ${item.รูป
+            .split(",")
+            .map((img) => `<img src="${img.trim()}" />`)
+            .join("")}
+        </div>
+        <div class="types" style="margin-top:10px;">
+          ${item.ประเภท
+            .split(",")
+            .map((t) => `<span>${t.trim()}</span>`)
+            .join("")}
+        </div>
+      `;
+      modal.classList.add("active");
+    }
+
+    modalClose.addEventListener("click", () =>
+      modal.classList.remove("active")
+    );
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.classList.remove("active");
+    });
+
+    // Search + Filter
+    function filterProducts() {
+      const searchText = searchInput.value.toLowerCase();
+      const typeText = typeFilter.value;
+      const filtered = data.filter((item) => {
+        const matchSearch =
+          (item.ชื่อสินค้า &&
+            item.ชื่อสินค้า.toLowerCase().includes(searchText)) ||
+          (item.คำอธิบาย &&
+            item.คำอธิบาย.toLowerCase().includes(searchText));
+        const matchType =
+          !typeText ||
+          (item.ประเภท &&
+            item.ประเภท.split(",").map((t) => t.trim()).includes(typeText));
+        return matchSearch && matchType;
+      });
+      renderProducts(filtered);
+    }
+
+    searchInput.addEventListener("input", filterProducts);
+    typeFilter.addEventListener("change", filterProducts);
+  </script>
+</body>
+</html>
